@@ -98,6 +98,7 @@ mon = forever $ do
 -- utils
 
 infixl 1 <&>
+(<&>) :: (Functor f) => f a -> (a -> b) -> f b
 (<&>) = flip fmap
 
 -- From https://github.com/reflex-frp/reflex-dom/pull/11/files

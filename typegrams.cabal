@@ -31,6 +31,7 @@ executable typegrams
                      , reflex
                      , hint
                      , pretty-show
+                     , transformers
                      , ghc
 
   default-language:    Haskell2010
