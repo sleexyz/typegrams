@@ -19,14 +19,15 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Control.Monad.IO.Class
 
-import Interp (getType)
+import Interp (getType, getType', TypeSig)
 
 
 
 
 type Cool = String
 
-type TypingAPI = "api" :> QueryParam "src" String :> Get '[JSON] Cool
+type TypingAPI = "dumb" :> QueryParam "src" String :> Get '[JSON] Cool
+                 :<|> "api" :> QueryParam "src" String :> Get '[JSON] (Maybe TypeSig)
 
 typingApi :: Proxy TypingAPI
 typingApi = Proxy
@@ -37,14 +38,25 @@ typingApi = Proxy
 --             } deriving (Eq, Show, Generic)
 
 
-
-server :: Server TypingAPI
-server Nothing = return "error!"
-server (Just str) = do
+dumb :: MonadIO m1 => Maybe String -> m1 String
+dumb Nothing = return "error!"
+dumb (Just str) = do
   poop <- liftIO . getType $ str
   return $ f poop where
     f (Left err) = show err
     f (Right r) = r
+
+api :: (MonadIO m) => Maybe String -> m (Maybe TypeSig)
+api Nothing = return Nothing
+api (Just str) = do
+  poop <- liftIO . getType' $ str
+  return $ f poop where
+    f (Left err) = Nothing
+    f (Right r) = Just r
+
+server :: Server TypingAPI
+server  = dumb :<|> api
+
 
 test :: Application
 test = serve typingApi server
