@@ -33,6 +33,7 @@ executable typegrams
                      , aeson
                      , wai
                      , warp
+                     , transformers
 
   default-language:    Haskell2010
 

@@ -5,7 +5,8 @@ let
   inherit (nixpkgs) pkgs;
 
   f = { mkDerivation, aeson, base, haskell-src-exts, hint
-      , pretty-show, servant-server, stdenv, text, wai, warp
+      , pretty-show, servant-server, stdenv, text, transformers, wai
+      , warp
       }:
       mkDerivation {
         pname = "typegrams";
@@ -15,7 +16,7 @@ let
         isExecutable = true;
         libraryHaskellDepends = [ base haskell-src-exts hint pretty-show ];
         executableHaskellDepends = [
-          aeson base servant-server text wai warp
+          aeson base servant-server text transformers wai warp
         ];
         homepage = "http://github.com/sleexyz/typegrams";
         description = "Type visualizations";

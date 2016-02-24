@@ -17,21 +17,34 @@ import GHC.Generics
 import Data.Proxy
 import Network.Wai
 import Network.Wai.Handler.Warp
+import Control.Monad.IO.Class
 
-type TypingAPI = "api" :> Get '[JSON] Cool
+import Interp (eat)
+
+
+
+
+type Cool = String
+
+type TypingAPI = "api" :> QueryParam "src" String :> Get '[JSON] Cool
+
+typingApi :: Proxy TypingAPI
+typingApi = Proxy
 
 -- data Cool = Cool
 --             { input :: String
 --             , output :: String
 --             } deriving (Eq, Show, Generic)
 
-typingApi :: Proxy TypingAPI
-typingApi = Proxy
 
-type Cool = String
 
 server :: Server TypingAPI
-server =  return "hello world"
+server Nothing = return "error!"
+server (Just str) = do
+  poop <- liftIO . eat $ str
+  return $ f poop where
+    f (Left err) = show err
+    f (Right r) = r
 
 test :: Application
 test = serve typingApi server
