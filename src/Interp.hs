@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-} --huh?
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
@@ -19,6 +20,8 @@ import           Language.Haskell.Exts.Syntax
 import qualified Language.Haskell.Interpreter as Hint
 import qualified Text.Show.Pretty as Pr
 import           Control.Monad
+import Data.Aeson.Types
+import Data.Aeson
 import           GHC.Generics
 
 
@@ -34,14 +37,19 @@ getType :: String -> IO (Either Hint.InterpreterError String)
 getType = hrun . Hint.typeOf
 
 
-type TypeSig = ParseResult Type
-deriving instance Generic (ParseResult a)
+type TypeSig = Maybe Type
+
+deriving instance Generic Type -- TODO: make Type generic? ToJSON?
+-- deriving instance ToJSON Type
 
 getType' :: String -> IO (Either Hint.InterpreterError TypeSig)
 getType' x = fmap f $ hrun . Hint.typeOf $ x
   where
     f (Left l) = Left l
-    f (Right r) = Right . parseType $ r
+    f (Right r) = Right . g . parseType $ r
+      where
+        g (ParseOk y) = Just y
+        g (ParseFailed _ _) = Nothing
 
 
 hrun :: Hint.Interpreter a -> IO (Either Hint.InterpreterError a)

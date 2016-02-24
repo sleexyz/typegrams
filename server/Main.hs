@@ -46,8 +46,10 @@ dumb (Just str) = do
     f (Left err) = show err
     f (Right r) = r
 
+-- TODO: flatten maybes
+
 api :: (MonadIO m) => Maybe String -> m (Maybe TypeSig)
-api Nothing = return Nothing
+api Nothing = return $ Nothing
 api (Just str) = do
   poop <- liftIO . getType' $ str
   return $ f poop where
