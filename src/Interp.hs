@@ -2,7 +2,8 @@
 
 module Interp
   (
-   eat 
+   getType,
+   getType'
   ) where
 
 import           Data.Typeable
@@ -21,12 +22,17 @@ foo :: ParseResult Type
 foo = parseType "a -> a"
 
 
-eat :: String -> IO (Either Hint.InterpreterError String)
-eat = hrun . Hint.typeOf
+getType :: String -> IO (Either Hint.InterpreterError String)
+getType = hrun . Hint.typeOf
+
+getType' :: String -> IO (Either Hint.InterpreterError String)
+getType' x = do
+  x <- hrun . Hint.typeOf $ x
+  return x
 
 
 hrun :: Hint.Interpreter a -> IO (Either Hint.InterpreterError a)
-hrun x = Hint.runInterpreter 
+hrun x = Hint.runInterpreter
   $ Hint.setImports ["Prelude"] 
   >> x
 
@@ -38,7 +44,7 @@ mon = forever $ do
   case elt of
     Left _ -> putStrLn "error!"
     Right lt -> do
-      let lt_ast =  parseType lt
+      let lt_ast :: ParseResult Type =  parseType lt
       putStrLn ""
       putStrLn lt
       putStrLn ""

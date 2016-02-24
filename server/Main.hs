@@ -19,7 +19,7 @@ import Network.Wai
 import Network.Wai.Handler.Warp
 import Control.Monad.IO.Class
 
-import Interp (eat)
+import Interp (getType)
 
 
 
@@ -41,7 +41,7 @@ typingApi = Proxy
 server :: Server TypingAPI
 server Nothing = return "error!"
 server (Just str) = do
-  poop <- liftIO . eat $ str
+  poop <- liftIO . getType $ str
   return $ f poop where
     f (Left err) = show err
     f (Right r) = r
