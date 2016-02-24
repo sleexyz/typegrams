@@ -17,5 +17,5 @@ flags: {}
 extra-package-dbs: []
 
 nix:
-  shell-file: "shell.nix"
+  shell-file: "default.nix"
   pure: false
